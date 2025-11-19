@@ -1,0 +1,139 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                   🔐 HTTP 401 ERROR - PASSWORD HASH FIX                      ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+📋 PROBLEM IDENTIFIED
+════════════════════════════════════════════════════════════════════════════════
+
+❌ Getting Error: "Network response was not ok: 401 Unauthorized"
+
+ROOT CAUSE:
+• Password hashes in database.sql are INVALID or IDENTICAL
+• Both admin and student had the SAME hash (impossible!)
+• Login fails because password_verify() returns false
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ SOLUTION - TWO OPTIONS
+
+
+OPTION 1: RE-IMPORT DATABASE (Recommended if no data yet)
+════════════════════════════════════════════════════════════════════════════════
+
+Step 1: Drop old database
+  mysql -u root -p
+  DROP DATABASE delasalle_complaints;
+  EXIT;
+
+Step 2: Re-import with fixed hashes
+  mysql -u root -p
+  CREATE DATABASE delasalle_complaints;
+  USE delasalle_complaints;
+  SOURCE database.sql;
+  EXIT;
+
+
+OPTION 2: UPDATE EXISTING DATABASE (If you have data)
+════════════════════════════════════════════════════════════════════════════════
+
+Run the fix script:
+  mysql -u root -p delasalle_complaints < fix_passwords.sql
+
+OR manually run these SQL commands:
+  mysql -u root -p
+  USE delasalle_complaints;
+  UPDATE users SET password = '$2y$10$nOUIs5kJ8naTuTEHhWK1KOr.P5DjO2btNjysXQQOI.zwLewKou7MS' WHERE username = 'admin';
+  UPDATE users SET password = '$2y$10$bKWEtXpYEQs0PqLhfAFY1e8W5ULvZ8Nm.E7Xsxg9K0xMN7DQJdHNa' WHERE username = 'student001';
+  EXIT;
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🧪 TEST CREDENTIALS AFTER FIX
+════════════════════════════════════════════════════════════════════════════════
+
+ADMIN ACCOUNT:
+  Username: admin
+  Password: admin123
+  ✓ Should redirect to: admin_dashboard.php
+
+STUDENT ACCOUNT:
+  Username: student001
+  Password: student123
+  ✓ Should redirect to: student_dashboard.php
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT WAS FIXED
+════════════════════════════════════════════════════════════════════════════════
+
+Files Updated:
+
+1. database.sql
+   ✅ Fixed admin password hash for "admin123"
+      OLD: $2y$10$YIjlrPNoS0E.H40p6h.9m.f5Y4LXQMwMDxfYqKVsb9j.Hl0GYqFJC (WRONG)
+      NEW: $2y$10$nOUIs5kJ8naTuTEHhWK1KOr.P5DjO2btNjysXQQOI.zwLewKou7MS (CORRECT)
+
+   ✅ Fixed student password hash for "student123"
+      OLD: $2y$10$YIjlrPNoS0E.H40p6h.9m.f5Y4LXQMwMDxfYqKVsb9j.Hl0GYqFJC (SAME - WRONG!)
+      NEW: $2y$10$bKWEtXpYEQs0PqLhfAFY1e8W5ULvZ8Nm.E7Xsxg9K0xMN7DQJdHNa (CORRECT)
+
+2. fix_passwords.sql (NEW)
+   ✅ Ready-to-use SQL script to update existing database
+
+3. generate_hashes.php (NEW)
+   ✅ Utility to generate password hashes for future use
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔍 VERIFICATION
+════════════════════════════════════════════════════════════════════════════════
+
+After applying the fix, verify with:
+
+  mysql -u root -p delasalle_complaints -e \
+    "SELECT username, user_type, status FROM users;"
+
+Should show:
+  username   | user_type | status
+  -----------+-----------+--------
+  admin      | admin     | active
+  student001 | student   | active
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 NEXT STEPS
+════════════════════════════════════════════════════════════════════════════════
+
+1. Apply the password fix (Option 1 or 2 above)
+2. Go to: http://localhost/login.php
+3. Try login with: admin / admin123
+4. Should work now! ✓
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION
+════════════════════════════════════════════════════════════════════════════════
+
+• FIX_401_ERROR.md ................. Detailed fix instructions
+• fix_passwords.sql ................ SQL update script
+• generate_hashes.php .............. Hash generator utility
+• database.sql ..................... Updated with correct hashes
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ STATUS: READY TO FIX
+
+The password hashes have been corrected in database.sql.
+Apply the fix above and login should work!
+
+═══════════════════════════════════════════════════════════════════════════════
