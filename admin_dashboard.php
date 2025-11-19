@@ -57,7 +57,7 @@
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <a href="admin_complaints.php" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm">Total Complaints</p>
@@ -65,9 +65,9 @@
                         </div>
                         <i class="fas fa-exclamation-circle text-4xl text-blue-200"></i>
                     </div>
-                </div>
+                </a>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <a href="admin_complaints.php?status=pending" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm">Pending Review</p>
@@ -75,9 +75,9 @@
                         </div>
                         <i class="fas fa-hourglass text-4xl text-yellow-200"></i>
                     </div>
-                </div>
+                </a>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <a href="admin_feedback.php" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm">Total Feedback</p>
@@ -85,9 +85,9 @@
                         </div>
                         <i class="fas fa-comment text-4xl text-green-200"></i>
                     </div>
-                </div>
+                </a>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <a href="admin_complaints.php?status=resolved" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm">Resolved</p>
@@ -95,7 +95,7 @@
                         </div>
                         <i class="fas fa-check-circle text-4xl text-purple-200"></i>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Charts Row -->
@@ -103,20 +103,20 @@
                 <!-- Complaints by Status -->
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">
-                        <i class="fas fa-chart-pie mr-2 text-red-600"></i>Complaints by Status
+                        <i class="fas fa-list mr-2 text-red-600"></i>Complaints by Status
                     </h3>
-                    <div id="statusChart" class="h-64">
-                        <p class="text-gray-500 text-center mt-8">Loading chart...</p>
+                    <div id="statusCards" class="space-y-2">
+                        <p class="text-gray-500 text-center">Loading...</p>
                     </div>
                 </div>
 
                 <!-- Complaints by Type -->
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">
-                        <i class="fas fa-chart-bar mr-2 text-blue-600"></i>Complaints by Type
+                        <i class="fas fa-tags mr-2 text-blue-600"></i>Complaints by Type
                     </h3>
-                    <div id="typeChart" class="h-64">
-                        <p class="text-gray-500 text-center mt-8">Loading chart...</p>
+                    <div id="typeCards" class="space-y-2">
+                        <p class="text-gray-500 text-center">Loading...</p>
                     </div>
                 </div>
             </div>
@@ -166,11 +166,77 @@
                         document.getElementById('total-feedback').textContent = data.stats.total_feedback;
                         document.getElementById('resolved-count').textContent = data.stats.resolved;
 
+                        // Display status cards
+                        displayStatusCards(data.chart_data.status);
+
+                        // Display type cards
+                        displayTypeCards(data.chart_data.type);
+
                         // Display recent complaints
                         displayRecentComplaints(data.recent_complaints);
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+        function displayStatusCards(statusData) {
+            const container = document.getElementById('statusCards');
+            const colors = {
+                'Submitted': { bg: 'bg-blue-100', text: 'text-blue-700', icon: 'fa-file' },
+                'Under Review': { bg: 'bg-yellow-100', text: 'text-yellow-700', icon: 'fa-clock' },
+                'In Progress': { bg: 'bg-purple-100', text: 'text-purple-700', icon: 'fa-spinner' },
+                'Resolved': { bg: 'bg-green-100', text: 'text-green-700', icon: 'fa-check' }
+            };
+
+            if (statusData.data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">No data</p>';
+                return;
+            }
+
+            let html = '';
+            statusData.labels.forEach((label, index) => {
+                const count = statusData.data[index];
+                const color = colors[label] || { bg: 'bg-gray-100', text: 'text-gray-700', icon: 'fa-circle' };
+                html += `
+                    <div class="flex items-center justify-between p-3 ${color.bg} rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <i class="fas ${color.icon} ${color.text} text-lg"></i>
+                            <span class="${color.text} font-medium">${label}</span>
+                        </div>
+                        <span class="${color.text} font-bold text-xl">${count}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function displayTypeCards(typeData) {
+            const container = document.getElementById('typeCards');
+            const colors = [
+                { bg: 'bg-red-100', text: 'text-red-700' },
+                { bg: 'bg-orange-100', text: 'text-orange-700' },
+                { bg: 'bg-indigo-100', text: 'text-indigo-700' },
+                { bg: 'bg-pink-100', text: 'text-pink-700' },
+                { bg: 'bg-teal-100', text: 'text-teal-700' }
+            ];
+
+            if (typeData.data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">No data</p>';
+                return;
+            }
+
+            let html = '';
+            typeData.labels.forEach((label, index) => {
+                const count = typeData.data[index];
+                const color = colors[index % colors.length];
+                html += `
+                    <div class="flex items-center justify-between p-3 ${color.bg} rounded-lg">
+                        <span class="${color.text} font-medium">${label}</span>
+                        <span class="${color.text} font-bold text-xl">${count}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
         function displayRecentComplaints(complaints) {
@@ -203,8 +269,8 @@
             }).join('');
         }
 
+        // Load data once on page load
         loadDashboardData();
-        setInterval(loadDashboardData, 60000); // Refresh every minute
     </script>
 </body>
 </html>
