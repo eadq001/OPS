@@ -100,11 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             } else {
                 http_response_code(401);
-                echo json_encode(['success' => false, 'message' => 'Invalid password.', 'error' => 'invalid_password']);
+                echo json_encode(['success' => false, 'message' => 'Invalid email or password.', 'error' => 'invalid_credentials']);
             }
         } else {
             http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Username not found or account is inactive.', 'error' => 'user_not_found']);
+            echo json_encode(['success' => false, 'message' => 'Invalid email or password.', 'error' => 'invalid_credentials']);
         }
 
         $stmt->close();

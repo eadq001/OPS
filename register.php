@@ -32,9 +32,6 @@
                         <option value="BS Computer Science">BS Computer Science</option>
                         <option value="BS Information Technology">BS Information Technology</option>
                         <option value="BS Business Administration">BS Business Administration</option>
-                        <option value="BS Education">BS Education</option>
-                        <option value="BS Engineering">BS Engineering</option>
-                        <option value="BS Nursing">BS Nursing</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
@@ -42,7 +39,7 @@
                 <!-- Department -->
                 <div class="mb-4">
                     <label for="department" class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                    <input type="text" id="department" name="department" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter department">
+                    <input type="text" id="department" name="department" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter department (Optional)">
                 </div>
 
                 <!-- Username -->
@@ -108,18 +105,20 @@
                 body: formData
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.status);
-                }
-                return response.json();
+                return response.json().then(data => {
+                    // Always return the data, regardless of response.ok status
+                    return { status: response.status, data: data };
+                });
             })
-            .then(data => {
-                if (data.success) {
+            .then(result => {
+                const { status, data } = result;
+                if (status >= 200 && status < 300 && data.success) {
                     showAlert(data.message, 'success');
                     setTimeout(() => {
                         window.location.href = 'login.php';
                     }, 2000);
                 } else {
+                    // Show the actual error message from server
                     showAlert(data.message || data.error || 'An error occurred.', 'error');
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
@@ -127,7 +126,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                showAlert('An error occurred. Please try again. (' + error.message + ')', 'error');
+                showAlert('An error occurred. Please try again.', 'error');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             });

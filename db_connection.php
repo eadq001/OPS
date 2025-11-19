@@ -62,7 +62,8 @@ function log_audit_action($user_id, $action, $table_name, $record_id, $old_value
     
     $stmt = $conn->prepare($query);
     // Type specifiers: i=integer, s=string
-    $stmt->bind_param("iisssss", $user_id, $record_id, $action, $table_name, $old_values_json, $new_values_json, $ip_address);
+    // Order must match the VALUES clause: user_id(i), action(s), table_name(s), record_id(i), old_values(s), new_values(s), ip_address(s)
+    $stmt->bind_param("issiiss", $user_id, $action, $table_name, $record_id, $old_values_json, $new_values_json, $ip_address);
     $stmt->execute();
     $stmt->close();
 }

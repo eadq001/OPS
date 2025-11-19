@@ -73,9 +73,9 @@
                 <a href="register.php" class="block w-full text-center bg-green-50 hover:bg-green-100 text-green-700 font-semibold py-2 px-4 rounded-lg transition">
                     <i class="fas fa-user-plus mr-2"></i>Create New Account
                 </a>
-                <a href="forgot_password.php" class="block w-full text-center bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg transition">
+                <!-- <a href="forgot_password.php" class="block w-full text-center bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg transition">
                     <i class="fas fa-key mr-2"></i>Forgot Password?
-                </a>
+                </a> -->
             </div>
         </div>
 
@@ -124,16 +124,18 @@
                 body: 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) + '&remember=' + (remember ? '1' : '0')
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.status);
-                }
-                return response.json();
+                return response.json().then(data => {
+                    // Always return the data, regardless of response status
+                    return { status: response.status, data: data };
+                });
             })
-            .then(data => {
-                if (data.success) {
+            .then(result => {
+                const { status, data } = result;
+                if (status >= 200 && status < 300 && data.success) {
                     // Redirect to the appropriate dashboard
                     window.location.href = data.redirect_to || data.redirect;
                 } else {
+                    // Show the actual error message from server
                     showAlert(data.message || data.error || 'An error occurred. Please try again.', 'error');
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
@@ -141,7 +143,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                showAlert('An error occurred. Please try again. (' + error.message + ')', 'error');
+                showAlert('An error occurred. Please try again.', 'error');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             });
