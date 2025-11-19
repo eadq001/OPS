@@ -24,30 +24,6 @@
             <div id="alert" class="mb-4"></div>
 
             <form id="registerForm" method="POST" action="process_register.php">
-                <!-- First Name -->
-                <div class="mb-4">
-                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                    <input type="text" id="first_name" name="first_name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter first name" required>
-                </div>
-
-                <!-- Last Name -->
-                <div class="mb-4">
-                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                    <input type="text" id="last_name" name="last_name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter last name" required>
-                </div>
-
-                <!-- Email -->
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                    <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter email address" required>
-                </div>
-
-                <!-- Phone -->
-                <div class="mb-4">
-                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter phone number">
-                </div>
-
                 <!-- Course -->
                 <div class="mb-4">
                     <label for="course" class="block text-sm font-medium text-gray-700 mb-2">Course / Program</label>

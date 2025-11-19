@@ -25,10 +25,12 @@ $conn->set_charset("utf8mb4");
 // Set timezone
 date_default_timezone_set('Asia/Manila');
 
-// Session configuration
-session_start();
-ini_set('session.gc_maxlifetime', 3600);
-ini_set('session.cookie_lifetime', 3600);
+// Session configuration - only if session not already started
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.gc_maxlifetime', 3600);
+    ini_set('session.cookie_lifetime', 3600);
+    session_start();
+}
 
 // Function to sanitize input
 function sanitize_input($data) {
@@ -59,7 +61,8 @@ function log_audit_action($user_id, $action, $table_name, $record_id, $old_value
               VALUES (?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("issmsss", $user_id, $action, $table_name, $record_id, $old_values_json, $new_values_json, $ip_address);
+    // Type specifiers: i=integer, s=string
+    $stmt->bind_param("iisssss", $user_id, $record_id, $action, $table_name, $old_values_json, $new_values_json, $ip_address);
     $stmt->execute();
     $stmt->close();
 }
@@ -134,10 +137,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     $error_log = "Error: $errstr in $errfile on line $errline (Error Code: $errno)";
     error_log($error_log);
     
-    if (php_sapi_name() !== 'cli') {
-        echo json_encode(['success' => false, 'error' => 'An error occurred. Please try again later.']);
-    }
-    
+    // Log errors but don't echo JSON - let the calling script handle output
     return true;
 });
 
