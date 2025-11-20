@@ -11,6 +11,43 @@
     <?php include 'db_connection.php'; check_admin(); ?>
 
     <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Top Nav -->
+        <nav class="md:hidden bg-red-700 text-white p-4 flex items-center justify-between">
+            <h1 class="text-xl font-bold">
+                <i class="fas fa-school mr-2"></i>Admin Panel
+            </h1>
+            <button id="mobileMenuBtn" class="text-white text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-red-700 text-white">
+            <nav class="flex flex-col space-y-0">
+                <a href="admin_dashboard.php" class="block px-4 py-3 border-b border-red-600 bg-red-800 hover:bg-red-900 transition">
+                    <i class="fas fa-chart-line mr-3"></i>Dashboard
+                </a>
+                <a href="admin_complaints.php" class="block px-4 py-3 border-b border-red-600 hover:bg-red-800 transition">
+                    <i class="fas fa-exclamation-circle mr-3"></i>All Complaints
+                </a>
+                <a href="admin_feedback.php" class="block px-4 py-3 border-b border-red-600 hover:bg-red-800 transition">
+                    <i class="fas fa-comments mr-3"></i>All Feedback
+                </a>
+                <a href="admin_reports.php" class="block px-4 py-3 border-b border-red-600 hover:bg-red-800 transition">
+                    <i class="fas fa-file-pdf mr-3"></i>Reports
+                </a>
+                <a href="admin_announcements.php" class="block px-4 py-3 border-b border-red-600 hover:bg-red-800 transition">
+                    <i class="fas fa-bullhorn mr-3"></i>Announcements
+                </a>
+                <a href="admin_audit_log.php" class="block px-4 py-3 border-b border-red-600 hover:bg-red-800 transition">
+                    <i class="fas fa-history mr-3"></i>Audit Log
+                </a>
+                <a href="logout.php" class="block px-4 py-3 hover:bg-red-800 transition text-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </nav>
+        </div>
+
         <!-- Sidebar -->
         <aside class="hidden md:flex md:w-64 bg-red-700 text-white flex-col">
             <div class="p-6 border-b border-red-600">
@@ -155,6 +192,21 @@
     </div>
 
     <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
         function loadDashboardData() {
             fetch('get_admin_dashboard.php')
                 .then(response => response.json())

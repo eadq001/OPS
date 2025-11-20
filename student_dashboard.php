@@ -10,7 +10,45 @@
 <body class="bg-gray-50">
     <?php include 'db_connection.php'; check_login(); ?>
 
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Top Nav -->
+        <nav class="md:hidden bg-blue-600 text-white p-4 flex items-center justify-between">
+            <h1 class="text-xl font-bold">
+                <i class="fas fa-school mr-2"></i>DSJBC Portal
+            </h1>
+            <button id="mobileMenuBtn" class="text-white text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-blue-600 text-white">
+            <nav class="flex flex-col space-y-0">
+                <a href="student_dashboard.php" class="block px-4 py-3 border-b border-blue-500 bg-blue-700 hover:bg-blue-800 transition">
+                    <i class="fas fa-home mr-3"></i>Dashboard
+                </a>
+                <a href="submit_complaint.php" class="block px-4 py-3 border-b border-blue-500 hover:bg-blue-700 transition">
+                    <i class="fas fa-exclamation-circle mr-3"></i>Submit Complaint
+                </a>
+                <a href="submit_feedback.php" class="block px-4 py-3 border-b border-blue-500 hover:bg-blue-700 transition">
+                    <i class="fas fa-comment mr-3"></i>Submit Feedback
+                </a>
+                <a href="my_submissions.php" class="block px-4 py-3 border-b border-blue-500 hover:bg-blue-700 transition">
+                    <i class="fas fa-list mr-3"></i>My Submissions
+                </a>
+                <a href="notifications.php" class="block px-4 py-3 border-b border-blue-500 hover:bg-blue-700 transition">
+                    <i class="fas fa-bell mr-3"></i>Notifications
+                    <span id="notif-badge" class="ml-2 bg-red-500 text-xs px-2 py-1 rounded-full hidden">0</span>
+                </a>
+                <a href="profile.php" class="block px-4 py-3 border-b border-blue-500 hover:bg-blue-700 transition">
+                    <i class="fas fa-user mr-3"></i>Profile Settings
+                </a>
+                <a href="logout.php" class="block px-4 py-3 hover:bg-blue-700 transition text-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </nav>
+        </div>
+
         <!-- Sidebar -->
         <aside class="hidden md:flex md:w-64 bg-blue-600 text-white flex-col">
             <div class="p-6 border-b border-blue-500">
@@ -48,35 +86,8 @@
             </div>
         </aside>
 
-        <!-- Mobile Menu Button -->
-        <button id="menuBtn" class="md:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-lg">
-            <i class="fas fa-bars text-xl"></i>
-        </button>
-
         <!-- Main Content -->
         <main class="flex-1 p-4 md:p-8">
-            <!-- Mobile Sidebar -->
-            <aside id="mobileSidebar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden">
-                <div class="bg-blue-600 text-white w-64 h-full overflow-y-auto">
-                    <div class="p-6 border-b border-blue-500">
-                        <button id="closeMenuBtn" class="float-right text-white">
-                            <i class="fas fa-times text-2xl"></i>
-                        </button>
-                        <h1 class="text-2xl font-bold">DSJBC Portal</h1>
-                    </div>
-                    <nav class="px-4 py-6 space-y-2">
-                        <a href="student_dashboard.php" class="block px-4 py-2 rounded-lg bg-blue-700">Dashboard</a>
-                        <a href="submit_complaint.php" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Submit Complaint</a>
-                        <a href="submit_feedback.php" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Submit Feedback</a>
-                        <a href="my_submissions.php" class="block px-4 py-2 rounded-lg hover:bg-blue-700">My Submissions</a>
-                        <a href="notifications.php" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Notifications</a>
-                        <a href="profile.php" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Profile Settings</a>
-                    </nav>
-                    <div class="p-4 border-t border-blue-500 mt-auto">
-                        <a href="logout.php" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Logout</a>
-                    </div>
-                </div>
-            </aside>
 
             <!-- Welcome Section -->
             <div class="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
@@ -165,13 +176,19 @@
     </div>
 
     <script>
-        // Toggle mobile menu
-        document.getElementById('menuBtn').addEventListener('click', () => {
-            document.getElementById('mobileSidebar').classList.toggle('hidden');
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
 
-        document.getElementById('closeMenuBtn').addEventListener('click', () => {
-            document.getElementById('mobileSidebar').classList.add('hidden');
+        // Close menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
         });
 
         // Load dashboard data
